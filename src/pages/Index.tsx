@@ -6,6 +6,9 @@ import Icon from '@/components/ui/icon';
 interface Choice {
   text: string;
   nextScene: number;
+  obsessionChange?: number;
+  trustChange?: number;
+  independenceChange?: number;
 }
 
 interface Scene {
@@ -14,6 +17,12 @@ interface Scene {
   choices: Choice[];
   character?: string;
   isEnding?: boolean;
+}
+
+interface Stats {
+  obsession: number;
+  trust: number;
+  independence: number;
 }
 
 const storyData: Scene[] = [
@@ -30,8 +39,8 @@ const storyData: Scene[] = [
     text: "Ты просыпаешься в своих покоях. Жара пустыни уже чувствуется, несмотря на толстые стены. Сегодня должен прийти новый репетитор по истории. Ты очень ждёшь — наконец-то можно будет поговорить с кем-то кроме отца! Но вспоминаешь, как закончилось с предыдущими учителями... Отец всегда находил причину их изгнать.",
     character: "Капсаицин - Утро",
     choices: [
-      { text: "Пойти к отцу за разрешением", nextScene: 2 },
-      { text: "Идти встречать репетитора самостоятельно", nextScene: 3 }
+      { text: "Пойти к отцу за разрешением", nextScene: 2, obsessionChange: -5, trustChange: 10, independenceChange: -5 },
+      { text: "Идти встречать репетитора самостоятельно", nextScene: 3, obsessionChange: 10, trustChange: -10, independenceChange: 10 }
     ]
   },
   {
@@ -39,8 +48,8 @@ const storyData: Scene[] = [
     text: "Ты находишь отца в тронном зале. Его длинные волосы рассыпаны по спине, мускулы напряжены. Он поворачивается к тебе, и его взгляд смягчается. 'Мой сын... Ты хочешь что-то спросить?' Ты чувствуешь, как он всегда знает, когда ты хочешь чего-то, что может ему не понравиться.",
     character: "Капсаицин - Диалог с отцом",
     choices: [
-      { text: "Спросить про репетитора осторожно", nextScene: 4 },
-      { text: "Попросить разрешения гулять одному", nextScene: 5 }
+      { text: "Спросить про репетитора осторожно", nextScene: 4, obsessionChange: 5, trustChange: 5 },
+      { text: "Попросить разрешения гулять одному", nextScene: 5, obsessionChange: 15, independenceChange: 5 }
     ]
   },
   {
@@ -48,8 +57,8 @@ const storyData: Scene[] = [
     text: "Ты решаешь идти самостоятельно. Свобода принимать решения — это так необычно! Но когда ты выходишь в коридор, чувствуешь взгляд на спине. Оборачиваешься — отец стоит в тени колонны. Его лицо непроницаемо, но руки сжаты в кулаки. 'Куда ты идёшь без меня, Капсаицин?'",
     character: "Капсаицин - Попытка независимости",
     choices: [
-      { text: "Сказать правду про репетитора", nextScene: 6 },
-      { text: "Соврать, что просто гулял", nextScene: 7 }
+      { text: "Сказать правду про репетитора", nextScene: 6, trustChange: 10, independenceChange: 5 },
+      { text: "Соврать, что просто гулял", nextScene: 7, obsessionChange: 5, trustChange: -15 }
     ]
   },
   {
@@ -57,8 +66,8 @@ const storyData: Scene[] = [
     text: "'Отец... Сегодня должен прийти новый репетитор. По истории. Я хочу учиться...' Ты видишь, как лицо отца темнеет. 'Репетитор? Зачем тебе чужие люди? Я могу научить тебя всему!' Его голос становится громче. Ты знаешь этот тон — скоро начнётся.",
     character: "Капсаицин - Просьба",
     choices: [
-      { text: "Настаивать на своём", nextScene: 8 },
-      { text: "Согласиться с отцом", nextScene: 9 }
+      { text: "Настаивать на своём", nextScene: 8, obsessionChange: 10, independenceChange: 10 },
+      { text: "Согласиться с отцом", nextScene: 9, obsessionChange: -10, trustChange: 5, independenceChange: -15 }
     ]
   },
   {
@@ -66,8 +75,8 @@ const storyData: Scene[] = [
     text: "'Отец, можно мне погулять во дворце? Одному?' Вопрос повисает в воздухе. Спайс медленно встаёт, его огромная фигура возвышается над тобой. 'Одному? Почему ты хочешь быть без меня? Я тебе не нравлюсь?' В его голосе — обида и что-то ещё. Что-то пугающее.",
     character: "Капсаицин - Просьба о свободе",
     choices: [
-      { text: "Объяснить, что просто хочется свободы", nextScene: 10 },
-      { text: "Отказаться от идеи", nextScene: 11 }
+      { text: "Объяснить, что просто хочется свободы", nextScene: 10, obsessionChange: 10, independenceChange: 10 },
+      { text: "Отказаться от идеи", nextScene: 11, obsessionChange: -5, independenceChange: -10 }
     ]
   },
   {
@@ -75,8 +84,8 @@ const storyData: Scene[] = [
     text: "'Я иду встречать репетитора. Мне нужно учиться.' Ты стараешься говорить уверенно, но голос дрожит. Отец подходит ближе, его длинные волосы почти касаются тебя. 'Репетитор...' — его голос похож на рычание. 'Хорошо. Я пойду с тобой. Я должен... проверить этого человека.'",
     character: "Капсаицин - Правда",
     choices: [
-      { text: "Согласиться, чтобы не злить отца", nextScene: 12 },
-      { text: "Попросить встретить учителя одному", nextScene: 13 }
+      { text: "Согласиться, чтобы не злить отца", nextScene: 12, obsessionChange: 5, trustChange: 5 },
+      { text: "Попросить встретить учителя одному", nextScene: 13, obsessionChange: 15, independenceChange: 15 }
     ]
   },
   {
@@ -84,8 +93,8 @@ const storyData: Scene[] = [
     text: "'Я... просто гулял, отец.' Ложь даётся тяжело. Спайс прищуривается. Он всегда чувствует, когда ты врёшь. 'Просто гулял? Без меня?' Он медленно идёт к тебе. 'Ты знаешь, что я не люблю, когда ты от меня что-то скрываешь, мой сын.' Его рука ложится тебе на плечо — тяжёлая, горячая.",
     character: "Капсаицин - Ложь",
     choices: [
-      { text: "Признаться в обмане", nextScene: 14 },
-      { text: "Продолжать врать", nextScene: 15 }
+      { text: "Признаться в обмане", nextScene: 14, obsessionChange: -5, trustChange: 15 },
+      { text: "Продолжать врать", nextScene: 15, obsessionChange: 10, trustChange: -20 }
     ]
   },
   {
@@ -110,8 +119,8 @@ const storyData: Scene[] = [
     text: "'Отец, я не хочу быть без тебя. Просто... Иногда мне нужно побыть наедине с собой. Подумать.' Ты стараешься объяснить максимально мягко. Спайс хмурится. 'Подумать? О чём? О том, как сбежать от меня?' Паранойя в его голосе очевидна.",
     character: "Капсаицин - Объяснение",
     choices: [
-      { text: "Успокоить отца", nextScene: 17 },
-      { text: "Разозлиться на недоверие", nextScene: 21 }
+      { text: "Успокоить отца", nextScene: 17, obsessionChange: -10, trustChange: 15 },
+      { text: "Разозлиться на недоверие", nextScene: 21, obsessionChange: 15, independenceChange: 10 }
     ]
   },
   {
@@ -138,8 +147,8 @@ const storyData: Scene[] = [
     text: "'Отец, пожалуйста... Позволь мне встретить его одному. Я уже не маленький.' Твои слова действуют как катализатор. Лицо Спайса искажается. 'НЕ МАЛЕНЬКИЙ?! Ты МОЙ сын! Ты всегда будешь под моей защитой!' Он хватает тебя за плечи. Больно.",
     character: "Капсаицин - Вспышка ярости отца",
     choices: [
-      { text: "Заплакать от боли", nextScene: 20 },
-      { text: "Попытаться вырваться", nextScene: 21 }
+      { text: "Заплакать от боли", nextScene: 20, obsessionChange: -15, trustChange: 5 },
+      { text: "Попытаться вырваться", nextScene: 21, obsessionChange: 20, independenceChange: 15 }
     ]
   },
   {
@@ -173,8 +182,8 @@ const storyData: Scene[] = [
     text: "'Отец, я люблю тебя. Я никогда не сбегу. Но мне нужно немного пространства.' Ты обнимаешь его, чувствуя, как напряжённые мускулы медленно расслабляются. 'Обещай мне...' — шепчет он. 'Обещаю, отец.' Ты не уверен, что сдержишь это обещание.",
     character: "Капсаицин - Компромисс",
     choices: [
-      { text: "Попросить немного свободы", nextScene: 30 },
-      { text: "Остаться с отцом", nextScene: 27 }
+      { text: "Попросить немного свободы", nextScene: 30, obsessionChange: 10, independenceChange: 15 },
+      { text: "Остаться с отцом", nextScene: 27, obsessionChange: -10, independenceChange: -10 }
     ]
   },
   {
@@ -419,9 +428,9 @@ const storyData: Scene[] = [
     text: "Ты решаешь воспользоваться моментом. 'Отец, расскажи мне о своём прошлом. Почему ты стал таким... каким ты есть?' Репетитор замолкает, явно облегчённый паузой. Спайс смотрит на тебя долго, в его глазах мелькает боль. 'Ты действительно хочешь знать?'",
     character: "Капсаицин - Вопросы отцу",
     choices: [
-      { text: "Да, я хочу понять тебя", nextScene: 40 },
-      { text: "Спросить, почему он так ревнует", nextScene: 41 },
-      { text: "Спросить про его силу и волосы", nextScene: 42 }
+      { text: "Да, я хочу понять тебя", nextScene: 40, trustChange: 15, obsessionChange: -5 },
+      { text: "Спросить, почему он так ревнует", nextScene: 41, obsessionChange: 10 },
+      { text: "Спросить про его силу и волосы", nextScene: 42, trustChange: 10 }
     ]
   },
   {
@@ -429,8 +438,8 @@ const storyData: Scene[] = [
     text: "'Когда-то давно я был защитником. Я спасал слабых, верил в добро.' Голос отца становится тише. 'Но те, кого я спас, предали меня. Использовали мою доброту как слабость. Я потерял всё... И поклялся никогда больше не доверять никому.' Он смотрит на тебя. 'Кроме тебя. Только ты не предашь меня, правда?'",
     character: "Капсаицин - История предательства",
     choices: [
-      { text: "Обещать никогда не предать", nextScene: 43 },
-      { text: "Сказать, что не все люди одинаковы", nextScene: 44 }
+      { text: "Обещать никогда не предать", nextScene: 43, obsessionChange: -10, trustChange: 20, independenceChange: -15 },
+      { text: "Сказать, что не все люди одинаковы", nextScene: 44, obsessionChange: 5, independenceChange: 10 }
     ]
   },
   {
@@ -438,8 +447,8 @@ const storyData: Scene[] = [
     text: "'Отец, почему ты так ревнуешь? Почему не можешь позволить мне общаться с другими?' Ты задаёшь вопрос осторожно. Лицо Спайса темнеет. 'Потому что ты прекрасен. Слишком прекрасен.' Его взгляд скользит по твоему телу, задерживаясь слишком долго. 'Все хотят тебя забрать. Я вижу, как они на тебя смотрят. Но ты МОЙ.'",
     character: "Капсаицин - Откровение",
     choices: [
-      { text: "Смутиться от его слов", nextScene: 45 },
-      { text: "Спросить, что он имеет в виду", nextScene: 46 }
+      { text: "Смутиться от его слов", nextScene: 45, obsessionChange: 15 },
+      { text: "Спросить, что он имеет в виду", nextScene: 46, obsessionChange: 10 }
     ]
   },
   {
@@ -447,8 +456,8 @@ const storyData: Scene[] = [
     text: "'Отец, расскажи про свои волосы и силу. Почему длинные волосы — это признак силы?' Спайс гордо расправляет плечи, его мускулы играют под кожей. 'Длинные волосы — символ того, что никто не смог меня победить. Каждый сантиметр — это доказательство моей власти.' Он касается твоих волос. 'Когда-нибудь и у тебя будут такие. Ты станешь таким же сильным.'",
     character: "Капсаицин - О силе",
     choices: [
-      { text: "Я хочу быть сильным, как ты", nextScene: 47 },
-      { text: "Я хочу быть добрым, а не сильным", nextScene: 48 }
+      { text: "Я хочу быть сильным, как ты", nextScene: 47, trustChange: 15, obsessionChange: -10 },
+      { text: "Я хочу быть добрым, а не сильным", nextScene: 48, independenceChange: 15 }
     ]
   },
   {
@@ -474,8 +483,8 @@ const storyData: Scene[] = [
     text: "Твои щёки краснеют от его слов. 'Отец... Что ты говоришь?' Спайс медленно приближается, его огромная фигура нависает над тобой. 'Я говорю правду, Капсаицин. Ты красив. Даже слишком. Иногда я смотрю на тебя и...' Он останавливается, сжимая кулаки. 'Ты не понимаешь, как тяжело контролировать себя.'",
     character: "Капсаицин - Смущение",
     choices: [
-      { text: "Отстраниться от отца", nextScene: 52 },
-      { text: "Спросить, что он чувствует", nextScene: 53 }
+      { text: "Отстраниться от отца", nextScene: 52, obsessionChange: 20, independenceChange: 15 },
+      { text: "Спросить, что он чувствует", nextScene: 53, obsessionChange: 15 }
     ]
   },
   {
@@ -510,8 +519,8 @@ const storyData: Scene[] = [
     text: "Вы идёте в пиршественный зал. Огромный стол ломится от еды — жареное мясо, дичь, целые туши. Спайс набрасывается на еду с невероятным аппетитом. Он рвёт мясо руками, жир стекает по его мускулистым рукам. 'Ешь, сын. Тебе нужны силы.' Ты смотришь на маленькую порцию перед собой — тебе редко хочется много есть.",
     character: "Капсаицин - Пир",
     choices: [
-      { text: "Попытаться съесть больше", nextScene: 59 },
-      { text: "Сказать, что не голоден", nextScene: 60 }
+      { text: "Попытаться съесть больше", nextScene: 59, obsessionChange: -5 },
+      { text: "Сказать, что не голоден", nextScene: 60, obsessionChange: 10, independenceChange: 5 }
     ]
   },
   {
@@ -570,8 +579,8 @@ const storyData: Scene[] = [
     text: "Спайс ведёт тебя в тренировочный зал. Он показывает тебе базовые стойки и удары. Его огромные руки направляют твои движения. Во время тренировки ты случайно царапаешь руку о деревянное оружие — маленькая царапина, несколько капель крови. Спайс видит это.",
     character: "Капсаицин - Тренировка",
     choices: [
-      { text: "Продолжить тренировку", nextScene: 67 },
-      { text: "Показать отцу рану", nextScene: 68 }
+      { text: "Продолжить тренировку", nextScene: 67, independenceChange: 10 },
+      { text: "Показать отцу рану", nextScene: 68, obsessionChange: 15 }
     ]
   },
   {
@@ -614,8 +623,8 @@ const storyData: Scene[] = [
     text: "Ты пытаешься игнорировать царапину и продолжить. Но Спайс уже рядом. 'СТОЙ!' Он хватает твою руку, его глаза безумны от паники. 'Ты РАНЕН! Кто посмел?!' Он смотрит на деревянное оружие как на врага. 'Это... это всего лишь царапина, отец...' Но он не слушает.",
     character: "Капсаицин - Реакция на рану",
     choices: [
-      { text: "Попытаться успокоить его", nextScene: 75 },
-      { text: "Дать ему обработать рану", nextScene: 76 }
+      { text: "Попытаться успокоить его", nextScene: 75, obsessionChange: 20 },
+      { text: "Дать ему обработать рану", nextScene: 76, obsessionChange: 15, independenceChange: -10 }
     ]
   },
   {
@@ -823,8 +832,8 @@ const storyData: Scene[] = [
     text: "Ты встаёшь на цыпочки и целуешь отца в щёку. Невинный, детский жест. Но Спайс замирает полностью. Его глаза расширяются, дыхание учащается. 'Капсаицин...' Его голос хриплый. Он касается места поцелуя, как будто не верит. 'Ты... поцеловал меня.' Его реакция странно интенсивна для простого поцелуя в щёку.",
     character: "Капсаицин - Невинный жест",
     choices: [
-      { text: "Это просто поцелуй, отец", nextScene: 105 },
-      { text: "Смутиться от его реакции", nextScene: 106 }
+      { text: "Это просто поцелуй, отец", nextScene: 105, obsessionChange: 10 },
+      { text: "Смутиться от его реакции", nextScene: 106, obsessionChange: 20 }
     ]
   },
   {
@@ -840,8 +849,8 @@ const storyData: Scene[] = [
     text: "Ты медленно отступаешь к двери. Спайс следует за тобой, шаг за шагом. 'Ты боишься меня?' В его голосе боль. 'Я пугаю тебя, сын мой?' Его лицо искажается страданием. 'Я только хочу... любить тебя. Правильно ли это или нет.' Он останавливается. 'Иди. Уходи, пока я позволяю.'",
     character: "Капсаицин - Страх",
     choices: [
-      { text: "Убежать", nextScene: 38 },
-      { text: "Остаться и обнять его", nextScene: 107 }
+      { text: "Убежать", nextScene: 38, independenceChange: 30 },
+      { text: "Остаться и обнять его", nextScene: 107, obsessionChange: -20, trustChange: 25 }
     ]
   },
   {
@@ -1021,15 +1030,46 @@ const storyData: Scene[] = [
 export default function Index() {
   const [currentScene, setCurrentScene] = useState(0);
   const [visitedScenes, setVisitedScenes] = useState<number[]>([0]);
+  const [stats, setStats] = useState<Stats>({
+    obsession: 50,
+    trust: 50,
+    independence: 30
+  });
 
   const scene = storyData[currentScene];
 
-  const handleChoice = (nextScene: number) => {
-    setCurrentScene(nextScene);
-    if (!visitedScenes.includes(nextScene)) {
-      setVisitedScenes([...visitedScenes, nextScene]);
+  const handleChoice = (nextScene: number, choice: Choice) => {
+    if (nextScene === 0 && currentScene !== 0) {
+      setStats({
+        obsession: 50,
+        trust: 50,
+        independence: 30
+      });
+      setVisitedScenes([0]);
+    } else {
+      if (!visitedScenes.includes(nextScene)) {
+        setVisitedScenes([...visitedScenes, nextScene]);
+      }
+      
+      setStats(prev => ({
+        obsession: Math.max(0, Math.min(100, prev.obsession + (choice.obsessionChange || 0))),
+        trust: Math.max(0, Math.min(100, prev.trust + (choice.trustChange || 0))),
+        independence: Math.max(0, Math.min(100, prev.independence + (choice.independenceChange || 0)))
+      }));
     }
+    
+    setCurrentScene(nextScene);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const getObsessionLevel = () => {
+    if (stats.obsession >= 80) return { text: "КРИТИЧЕСКАЯ", color: "text-red-600", bg: "bg-red-500" };
+    if (stats.obsession >= 60) return { text: "Высокая", color: "text-orange-600", bg: "bg-orange-500" };
+    if (stats.obsession >= 40) return { text: "Умеренная", color: "text-yellow-600", bg: "bg-yellow-500" };
+    return { text: "Низкая", color: "text-green-600", bg: "bg-green-500" };
+  };
+
+  const obsessionLevel = getObsessionLevel();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#2D1B3D] via-[#3d2647] to-[#8B47B7] flex items-center justify-center p-4 font-sans">
@@ -1044,12 +1084,86 @@ export default function Index() {
         </div>
 
         <Card className="bg-white/95 backdrop-blur p-8 md:p-12 rounded-2xl shadow-2xl animate-fade-in">
-          {scene.character && (
-            <div className="flex items-center gap-2 mb-6 text-primary/70">
-              <Icon name="User" size={20} />
-              <span className="font-semibold text-sm uppercase tracking-wider">
-                {scene.character}
-              </span>
+          <div className="mb-6 space-y-4">
+            {scene.character && (
+              <div className="flex items-center gap-2 text-primary/70">
+                <Icon name="User" size={20} />
+                <span className="font-semibold text-sm uppercase tracking-wider">
+                  {scene.character}
+                </span>
+              </div>
+            )}
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-muted/30 rounded-xl">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <Icon name="Heart" size={16} className={obsessionLevel.color} />
+                    <span className="font-medium">Одержимость</span>
+                  </div>
+                  <span className={`font-bold ${obsessionLevel.color}`}>{obsessionLevel.text}</span>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full ${obsessionLevel.bg} transition-all duration-500`}
+                    style={{ width: `${stats.obsession}%` }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">{stats.obsession}%</p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <Icon name="Shield" size={16} className="text-blue-600" />
+                    <span className="font-medium">Доверие</span>
+                  </div>
+                  <span className="font-bold text-blue-600">{stats.trust}%</span>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-blue-500 transition-all duration-500"
+                    style={{ width: `${stats.trust}%` }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">Доверие Спайса к тебе</p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <Icon name="Sparkles" size={16} className="text-purple-600" />
+                    <span className="font-medium">Независимость</span>
+                  </div>
+                  <span className="font-bold text-purple-600">{stats.independence}%</span>
+                </div>
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-purple-500 transition-all duration-500"
+                    style={{ width: `${stats.independence}%` }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">Твоя свобода</p>
+              </div>
+            </div>
+          </div>
+
+          {stats.obsession >= 80 && !scene.isEnding && (
+            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
+              <div className="flex items-center gap-2 text-red-800">
+                <Icon name="AlertTriangle" size={20} />
+                <span className="font-bold text-sm">ПРЕДУПРЕЖДЕНИЕ: Одержимость Спайса достигла критического уровня!</span>
+              </div>
+              <p className="text-red-700 text-sm mt-1">Твои выборы определят судьбу ваших отношений...</p>
+            </div>
+          )}
+
+          {stats.independence <= 10 && !scene.isEnding && (
+            <div className="mb-6 p-4 bg-orange-50 border-l-4 border-orange-500 rounded">
+              <div className="flex items-center gap-2 text-orange-800">
+                <Icon name="AlertCircle" size={20} />
+                <span className="font-bold text-sm">Твоя независимость на грани исчезновения...</span>
+              </div>
             </div>
           )}
 
@@ -1061,22 +1175,57 @@ export default function Index() {
 
           <div className="space-y-3">
             {scene.choices.map((choice, index) => (
-              <Button
-                key={index}
-                onClick={() => handleChoice(choice.nextScene)}
-                className="w-full text-left justify-start h-auto py-4 px-6 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-base md:text-lg font-medium transition-all duration-200 hover:scale-[1.02] shadow-md"
-              >
-                <Icon name="ChevronRight" size={20} className="mr-2 flex-shrink-0" />
-                <span>{choice.text}</span>
-              </Button>
+              <div key={index} className="relative group">
+                <Button
+                  onClick={() => handleChoice(choice.nextScene, choice)}
+                  className="w-full text-left justify-start h-auto py-4 px-6 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-base md:text-lg font-medium transition-all duration-200 hover:scale-[1.02] shadow-md"
+                >
+                  <Icon name="ChevronRight" size={20} className="mr-2 flex-shrink-0" />
+                  <span className="flex-1">{choice.text}</span>
+                  {(choice.obsessionChange || choice.trustChange || choice.independenceChange) && (
+                    <div className="ml-3 flex gap-1 flex-shrink-0">
+                      {choice.obsessionChange && (
+                        <span className={`text-xs px-2 py-1 rounded ${choice.obsessionChange > 0 ? 'bg-red-500/20 text-red-200' : 'bg-green-500/20 text-green-200'}`}>
+                          {choice.obsessionChange > 0 ? '↑' : '↓'} Одержимость
+                        </span>
+                      )}
+                      {choice.trustChange && (
+                        <span className={`text-xs px-2 py-1 rounded ${choice.trustChange > 0 ? 'bg-blue-500/20 text-blue-200' : 'bg-gray-500/20 text-gray-200'}`}>
+                          {choice.trustChange > 0 ? '↑' : '↓'} Доверие
+                        </span>
+                      )}
+                      {choice.independenceChange && (
+                        <span className={`text-xs px-2 py-1 rounded ${choice.independenceChange > 0 ? 'bg-purple-500/20 text-purple-200' : 'bg-gray-500/20 text-gray-200'}`}>
+                          {choice.independenceChange > 0 ? '↑' : '↓'} Независимость
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </Button>
+              </div>
             ))}
           </div>
 
           {scene.isEnding && (
-            <div className="mt-8 pt-8 border-t border-muted-foreground/20 text-center">
-              <p className="text-muted-foreground italic">
+            <div className="mt-8 pt-8 border-t border-muted-foreground/20 space-y-4">
+              <p className="text-muted-foreground italic text-center">
                 Продолжение следует...
               </p>
+              <div className="grid grid-cols-3 gap-4 text-center text-sm">
+                <div>
+                  <p className="font-bold text-foreground">Итоговая одержимость</p>
+                  <p className={`text-2xl font-bold ${obsessionLevel.color}`}>{stats.obsession}%</p>
+                  <p className="text-muted-foreground">{obsessionLevel.text}</p>
+                </div>
+                <div>
+                  <p className="font-bold text-foreground">Итоговое доверие</p>
+                  <p className="text-2xl font-bold text-blue-600">{stats.trust}%</p>
+                </div>
+                <div>
+                  <p className="font-bold text-foreground">Итоговая независимость</p>
+                  <p className="text-2xl font-bold text-purple-600">{stats.independence}%</p>
+                </div>
+              </div>
             </div>
           )}
         </Card>
